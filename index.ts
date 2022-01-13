@@ -5,8 +5,10 @@ import { Sha1 } from 'https://deno.land/std@0.121.0/hash/sha1.ts'
 import * as path from 'https://deno.land/std@0.121.0/path/mod.ts'
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Errors
+// Global
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+const cacheRoot = `./callandcache/cache`
 
 const errors = {
   Deserialize: class Deserialize extends Error {},
@@ -217,7 +219,7 @@ class Cache {
       res: res.toJSON(),
     }
     await Deno.writeTextFile(filepath, JSON.stringify(item, null, '  '))
-    console.log(`Cached ${filepath}`)
+    console.log(`Saving response to '${filepath}'`)
   }
 
   public async get(req: RequestInfo): Promise<ResponseInfo | undefined> {
@@ -238,8 +240,7 @@ class Cache {
   }
 
   private buildFilepath(req: RequestInfo) {
-    const result = path.join(`./tmp/cache`, req.url.host, `${req.hash()}.json`)
-    return result
+    return path.join(cacheRoot, req.url.host, `${req.hash()}.json`)
   }
 }
 
